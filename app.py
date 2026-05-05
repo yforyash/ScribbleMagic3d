@@ -1,66 +1,55 @@
 import streamlit as st
-import pandas as pd
 import numpy as np
 import tensorflow as tf
+from streamlit_drawable_canvas import st_canvas
+import cv2
 
-# Page config
-st.set_page_config(page_title="Digit Recognition Demo", layout="centered")
+st.set_page_config(page_title="Digit Recognition", layout="centered")
 
-st.title("✋ Sensor-based Digit Recognition")
-st.write("Upload a CSV file to predict the digit")
+st.title("✍️ Draw Digit Recognition (Real Working)")
 
-# Load TFLite model (cached)
+# Load MNIST-trained model
 @st.cache_resource
 def load_model():
-    interpreter = tf.lite.Interpreter(model_path="model_quantized.tflite")
-    interpreter.allocate_tensors()
-    return interpreter
+    model = tf.keras.models.load_model("mnist_model.h5")
+    return model
 
-interpreter = load_model()
-input_details = interpreter.get_input_details()
-output_details = interpreter.get_output_details()
+model = load_model()
 
-# File upload
-uploaded_file = st.file_uploader("📂 Upload CSV file", type=["csv"])
+canvas = st_canvas(
+    fill_color="black",
+    stroke_width=15,
+    stroke_color="white",
+    background_color="black",
+    height=280,
+    width=280,
+    drawing_mode="freedraw",
+    key="canvas",
+)
 
-if uploaded_file is not None:
-    try:
-        # Read CSV
-        data = pd.read_csv(uploaded_file)
-        st.subheader("📊 Uploaded Data Preview")
-        st.dataframe(data.head())
+if st.button("🔍 Predict"):
+    if canvas.image_data is not None:
 
-        X = data.values.astype(np.float32)
+        img = canvas.image_data
 
-        # 🔧 Fix shape (36 x 6)
-        if X.shape[0] < 36:
-            X = np.pad(X, ((0, 36 - X.shape[0]), (0, 0)))
-        elif X.shape[0] > 36:
-            X = X[:36, :]
+        # grayscale
+        img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_RGBA2GRAY)
 
-        if X.shape[1] < 6:
-            X = np.pad(X, ((0, 0), (0, 6 - X.shape[1])))
-        elif X.shape[1] > 6:
-            X = X[:, :6]
+        # invert
+        img = 255 - img
 
-        # Reshape for model
-        X = np.expand_dims(X, axis=0)
-        X = np.expand_dims(X, axis=-1)
+        # resize to 28x28
+        img = cv2.resize(img, (28, 28))
 
-        # Prediction button
-        if st.button("🔍 Predict Digit"):
-            interpreter.set_tensor(input_details[0]['index'], X)
-            interpreter.invoke()
-            output = interpreter.get_tensor(output_details[0]['index'])
+        # normalize
+        img = img / 255.0
 
-            pred = int(np.argmax(output))
-            confidence = float(np.max(output))
+        # reshape
+        img = img.reshape(1, 28, 28, 1)
 
-            st.success(f"✅ Predicted Digit: {pred}")
-            st.info(f"📈 Confidence: {confidence:.2f}")
+        pred = model.predict(img)
+        digit = int(np.argmax(pred))
+        conf = float(np.max(pred))
 
-    except Exception as e:
-        st.error(f"❌ Error processing file: {e}")
-
-else:
-    st.warning("⚠️ Please upload a CSV file to proceed")
+        st.success(f"✅ Predicted: {digit}")
+        st.info(f"Confidence: {conf:.2f}")
