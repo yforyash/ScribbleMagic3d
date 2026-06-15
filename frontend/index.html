@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScribbleMagic 3D - Virtual Hand Writing & Tracing Pad</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <div id="auth-container" class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="60" height="60">
+          <path d="M20 80 L50 20 L80 80 Z" fill="none" stroke="#ff5e97" stroke-width="8" stroke-linejoin="round"/>
+          <circle cx="50" cy="40" r="12" fill="#4d96ff"/>
+          <path d="M40 70 Q50 60 60 70" stroke="#ffb037" stroke-width="6" fill="none" stroke-linecap="round"/>
+        </svg>
+        <h2>ScribbleMagic 3D</h2>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tab-login-btn">Login</button>
+        <button class="auth-tab-btn" id="tab-signup-btn">Sign Up</button>
+        <button class="auth-tab-btn" id="tab-reset-btn" style="display:none;">Reset</button>
+      </div>
+      <form id="form-login" class="auth-form active">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="login-username" required placeholder="Enter username">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" required placeholder="Enter password">
+        </div>
+        <button type="submit" class="auth-submit-btn">Let's Play! 🚀</button>
+        <p class="auth-footer-link"><a href="#" id="link-forgot-pass">Forgot Password?</a></p>
+      </form>
+      <form id="form-signup" class="auth-form">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="signup-username" required placeholder="Pick a username">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="signup-password" required placeholder="Create a password">
+        </div>
+        <div class="form-group">
+          <label>Security Question</label>
+          <select id="signup-question" required>
+            <option value="What is your favorite color?">What is your favorite color?</option>
+            <option value="What is your favorite animal?">What is your favorite animal?</option>
+            <option value="What is the name of your best friend?">What is the name of your best friend?</option>
+            <option value="What is your favorite cartoon character?">What is your favorite cartoon character?</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Security Answer</label>
+          <input type="text" id="signup-answer" required placeholder="Answer for password recovery">
+        </div>
+        <button type="submit" class="auth-submit-btn">Register & Start 🎨</button>
+      </form>
+      <form id="form-reset" class="auth-form">
+        <div class="form-group" id="reset-step-1">
+          <label>Username</label>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="reset-username" required placeholder="Enter username" style="flex:1;">
+            <button type="button" id="btn-reset-find" class="control-btn btn-primary-action" style="width:auto; padding:0 20px;">Find</button>
+          </div>
+        </div>
+        <div id="reset-step-2" style="display:none;">
+          <div class="form-group">
+            <label id="lbl-reset-question" style="color:var(--secondary); font-weight:600; margin-bottom:10px; display:block;"></label>
+            <input type="text" id="reset-answer" required placeholder="Your answer">
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" id="reset-new-password" required placeholder="Enter new password">
+          </div>
+          <button type="submit" class="auth-submit-btn">Reset Password 🔐</button>
+        </div>
+        <p class="auth-footer-link" style="margin-top:15px;"><a href="#" id="link-back-login">Back to Login</a></p>
+      </form>
+    </div>
+  </div>
+
+  <div id="main-content" style="display:none;">
+    <header class="navbar">
+      <a href="#" class="brand">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 80 L50 20 L80 80 Z" fill="none" stroke="#ff5e97" stroke-width="8" stroke-linejoin="round"/>
+          <circle cx="50" cy="40" r="12" fill="#4d96ff"/>
+          <path d="M40 70 Q50 60 60 70" stroke="#ffb037" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M50 20 L50 10" stroke="#6bcb77" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="50" cy="8" r="4" fill="#ffb037"/>
+        </svg>
+        <span>ScribbleMagic 3D</span>
+      </a>
+      <nav style="display:flex; align-items:center; gap:20px;">
+        <ul class="nav-links">
+          <li><a href="#" class="active" id="nav-home">Home</a></li>
+          <li><a href="#portals" id="nav-activities">Activities</a></li>
+          <li><a href="#benefits" id="nav-about">Why Scribble</a></li>
+          <li><a href="#faq" id="nav-help">FAQs</a></li>
+        </ul>
+        <div style="font-weight:600; color:#555; display:flex; align-items:center; gap:10px;">
+          <span>Hi, <strong id="display-username" style="color:var(--primary);">Kid</strong>!</span>
+          <button class="control-btn btn-secondary-action" id="btn-logout" style="width:auto; padding:6px 14px; font-size:14px; border-radius:15px;">Logout</button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="home">
+        <div class="hero-content">
+          <h1>Trace & Draw In The Air Like Magic!</h1>
+          <p>A fun, virtual writing pad powered by computer vision. Write, draw, and play with simple finger movements in front of your camera. Specially crafted to help kids improve motor skills and make writing practice a playful adventure!</p>
+          <a href="#portals" class="btn-magic" id="btn-hero-start">Start Drawing Now</a>
+        </div>
+        <div class="hero-image">
+          <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="100%" stop-color="#e2efff"/>
+              </linearGradient>
+              <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffb037"/>
+                <stop offset="100%" stop-color="#ff5e97"/>
+              </linearGradient>
+            </defs>
+            <circle cx="400" cy="120" r="60" fill="url(#sunGrad)"/>
+            <path d="M100 350 Q130 320 170 330 T240 340 T300 320 T350 360 L100 360 Z" fill="url(#cloudGrad)"/>
+            <path d="M250 200 L320 270 L280 310 L210 240 Z" fill="#4d96ff"/>
+            <path d="M210 240 L180 270 L230 290 Z" fill="#ff5e97"/>
+            <path d="M320 270 L350 240 L370 260 L340 290 Z" fill="#ffb037"/>
+            <circle cx="180" cy="270" r="5" fill="#2b2b2b"/>
+            <circle cx="90" cy="180" r="10" fill="#6bcb77" opacity="0.8"/>
+            <path d="M90 180 L80 200 L100 200 Z" fill="#6bcb77"/>
+            <circle cx="380" cy="380" r="8" fill="#ff5e97" opacity="0.6"/>
+            <path d="M420 240 Q430 230 440 240 T460 240" stroke="#ffb037" stroke-width="4" fill="none"/>
+          </svg>
+        </div>
+      </section>
+
+      <section class="features-preview">
+        <h2 class="section-title">Magical Features Built for Learning</h2>
+        <p class="section-subtitle">Unlock creative power using simple hand tracking technology and real-time AI response.</p>
+        <div class="grid-cards">
+          <div class="feature-card">
+            <div class="icon-box">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <h3>Touchless Air Draw</h3>
+            <p>No mouse, no tablet! Raise your finger and draw directly in the air. The camera reads your movements and renders strokes in real time.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon-box">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
+            </div>
+            <h3>Guided Tracing Tracks</h3>
+            <p>Step-by-step guidance paths. Trace lines, curves, alphabets, and words to build muscle memory and improve coordination.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon-box">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+            </div>
+            <h3>AI Smart Reader</h3>
+            <p>Draw any digit or write simple words. Our built-in intelligence instantly scans, recognizes, and pronounces them aloud.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="portal-section" id="portals">
+        <h2 class="section-title">The Learning Playroom</h2>
+        <p class="section-subtitle">Select any column below to open a specialized learning activity. Each is fully loaded with features!</p>
+        <div class="columns-wrapper">
+          <div class="portal-column col-draw" id="col-air-draw">
+            <svg class="column-icon" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="#ff5e97" opacity="0.1"/>
+              <path d="M30 70 L45 55 L55 65 L80 35" stroke="#ff5e97" stroke-width="6" fill="none" stroke-linecap="round"/>
+              <circle cx="80" cy="35" r="8" fill="#ffb037"/>
+            </svg>
+            <h4>Air Canvas</h4>
+            <p>Draw in the air using finger tracking. Pick colors, shapes and create drawings.</p>
+          </div>
+          <div class="portal-column col-trace" id="col-tracing">
+            <svg class="column-icon" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="#4d96ff" opacity="0.1"/>
+              <path d="M30 50 Q50 20 70 50 T90 50" stroke="#4d96ff" stroke-width="6" fill="none" stroke-dasharray="8 6"/>
+              <circle cx="30" cy="50" r="6" fill="#ff5e97"/>
+            </svg>
+            <h4>Tracing Quest</h4>
+            <p>Trace letters, shapes, and words. Follow arrows and build control.</p>
+          </div>
+          <div class="portal-column col-ai" id="col-ai-reader">
+            <svg class="column-icon" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="#ffb037" opacity="0.1"/>
+              <rect x="30" y="30" width="40" height="40" rx="8" stroke="#ffb037" stroke-width="6" fill="none"/>
+              <circle cx="45" cy="45" r="4" fill="#2b2b2b"/>
+              <circle cx="55" cy="45" r="4" fill="#2b2b2b"/>
+              <path d="M42 58 Q50 63 58 58" stroke="#ff5e97" stroke-width="4" fill="none"/>
+            </svg>
+            <h4>AI Playroom</h4>
+            <p>Write digits or words on screen and let our smart robot guess them.</p>
+          </div>
+          <div class="portal-column col-games" id="col-games">
+            <svg class="column-icon" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="#6bcb77" opacity="0.1"/>
+              <path d="M35 35 H65 V65 H35 Z" fill="none" stroke="#6bcb77" stroke-width="6"/>
+              <circle cx="50" cy="50" r="10" fill="#ff5e97"/>
+            </svg>
+            <h4>Spelling Fun</h4>
+            <p>Solve spelling challenges by drawing directly on the virtual board.</p>
+          </div>
+          <div class="portal-column col-dashboard" id="col-dashboard">
+            <svg class="column-icon" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="#a155e8" opacity="0.1"/>
+              <rect x="25" y="30" width="10" height="40" fill="#a155e8" rx="2"/>
+              <rect x="45" y="20" width="10" height="50" fill="#ffb037" rx="2"/>
+              <rect x="65" y="40" width="10" height="30" fill="#4d96ff" rx="2"/>
+            </svg>
+            <h4>Analytics</h4>
+            <p>Track history, achievements, accuracy scores, and export progress files.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="benefits-section" id="benefits">
+        <div class="benefits-container">
+          <div class="benefits-text">
+            <h2 class="section-title">Designed for Motor Skill Development</h2>
+            <p>Handwriting is a complex motor task. For children with dysgraphia or physical learning difficulties, coordination can be frustrating. ScribbleMagic 3D turns practice into an active process that offers key advantages:</p>
+            <ul class="benefits-list">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <div><strong>Active Muscle Memory:</strong> Large hand and arm gestures in the air (gross motor coordination) help reinforce neural pathways before transitioning to fine pen controls.</div>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <div><strong>Multi-Sensory Feedback:</strong> Visually tracking the digital stroke as the hand moves strengthens spatial planning and finger placement confidence.</div>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <div><strong>Stress-Free Environment:</strong> No erasing tears. Mistakes are cleared with a wave of a hand, keeping the kid motivated and smiling!</div>
+              </li>
+            </ul>
+          </div>
+          <div class="benefits-illustration">
+            <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+              <rect x="50" y="50" width="300" height="300" rx="30" fill="#ffffff" stroke="#4d96ff" stroke-width="8"/>
+              <line x1="80" y1="120" x2="320" y2="120" stroke="#e2e8f0" stroke-width="4" stroke-dasharray="10 5"/>
+              <line x1="80" y1="200" x2="320" y2="200" stroke="#e2e8f0" stroke-width="4" stroke-dasharray="10 5"/>
+              <line x1="80" y1="280" x2="320" y2="280" stroke="#e2e8f0" stroke-width="4" stroke-dasharray="10 5"/>
+              <path d="M120 280 Q180 120 240 280" fill="none" stroke="#ff5e97" stroke-width="12" stroke-linecap="round"/>
+              <circle cx="240" cy="280" r="10" fill="#ffb037"/>
+              <circle cx="120" cy="280" r="10" fill="#6bcb77"/>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="faq-section" id="faq">
+        <div class="faq-container">
+          <h2 class="section-title" style="text-align:center;">Frequently Asked Questions</h2>
+          <p class="section-subtitle" style="text-align:center;">Everything you need to know about setting up and playing.</p>
+          <div class="faq-item">
+            <div class="faq-question">How does the camera drawing work?</div>
+            <div class="faq-answer">The application accesses your webcam locally. Using computer vision models in the browser, it reads the coordinate of your index finger tip. Raising your finger draws a line, while raising both the index and middle fingers halts drawing and allows you to hover over control buttons.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">Does it send my camera feed to any server?</div>
+            <div class="faq-answer">No! The camera processing runs entirely inside your web browser (client-side). No video frames are sent to the backend server, ensuring complete privacy and speed.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">Can I use this without a camera?</div>
+            <div class="faq-answer">Yes, absolutely! Every activity supports normal mouse or touch interactions. If you don't enable the camera, you can draw and trace using your mouse or trackpad.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">How does the AI predict my writing?</div>
+            <div class="faq-answer">When you click the Predict button, the drawing canvas is captured and sent to the python server. The server runs a neural network for digits and a character reader (OCR) for words to predict what was written.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-logo">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 80 L50 20 L80 80 Z" fill="none" stroke="#ff5e97" stroke-width="8" stroke-linejoin="round"/>
+          <circle cx="50" cy="40" r="12" fill="#4d96ff"/>
+        </svg>
+        <span>ScribbleMagic 3D</span>
+      </div>
+      <ul class="footer-links">
+        <li><a href="#home">Back to Top</a></li>
+        <li><a href="#portals">Activities</a></li>
+        <li><a href="#benefits">Methodology</a></li>
+      </ul>
+      <div class="footer-bottom">
+        <p>&copy; 2026 ScribbleMagic 3D. Play, trace, and learn with magic.</p>
+      </div>
+    </footer>
+
+    <div class="overlay" id="overlay-air-draw">
+      <div class="modal-content">
+        <button class="btn-close">&times;</button>
+        <div class="modal-header">
+          <h3 class="modal-title">🎨 Magic Air Canvas</h3>
+        </div>
+        <div class="modal-body">
+          <div class="workspace-layout">
+            <div class="control-panel">
+              <div class="control-group">
+                <label>Pick Color</label>
+                <div class="colors-row" id="draw-colors">
+                  <div class="color-option active" style="background:#ff5e97;" data-color="#ff5e97"></div>
+                  <div class="color-option" style="background:#4d96ff;" data-color="#4d96ff"></div>
+                  <div class="color-option" style="background:#ffb037;" data-color="#ffb037"></div>
+                  <div class="color-option" style="background:#6bcb77;" data-color="#6bcb77"></div>
+                  <div class="color-option" style="background:#2b2b2b;" data-color="#2b2b2b"></div>
+                </div>
+              </div>
+              <div class="control-group">
+                <label>Brush Size</label>
+                <input type="range" id="draw-brush-size" min="4" max="40" value="10">
+              </div>
+              <button class="control-btn btn-secondary-action" id="btn-draw-clear">Clear Screen</button>
+              <button class="control-btn btn-secondary-action" id="btn-draw-camera-toggle">Enable Camera</button>
+              <button class="control-btn btn-primary-action" id="btn-draw-save">Save Picture</button>
+            </div>
+            <div class="canvas-container">
+              <video class="webcam-preview" id="draw-webcam" autoplay playsinline muted></video>
+              <canvas class="drawing-canvas" id="draw-canvas" width="800" height="500"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="overlay-tracing">
+      <div class="modal-content">
+        <button class="btn-close">&times;</button>
+        <div class="modal-header">
+          <h3 class="modal-title">✍️ Guided Tracing Quest</h3>
+        </div>
+        <div class="modal-body">
+          <div class="interactive-panel">
+            <div class="level-cards">
+              <div class="level-card active" data-level="1">
+                <h5>Level 1</h5>
+                <p>Basic Shapes</p>
+              </div>
+              <div class="level-card" data-level="2">
+                <h5>Level 2</h5>
+                <p>Alphabets</p>
+              </div>
+              <div class="level-card" data-level="3">
+                <h5>Level 3</h5>
+                <p>Word Building</p>
+              </div>
+              <div class="level-card" data-level="4">
+                <h5>Level 4</h5>
+                <p>Free Writing</p>
+              </div>
+            </div>
+            <div class="workspace-layout">
+              <div class="control-panel">
+                <div class="control-group">
+                  <label>Active Pattern</label>
+                  <select id="trace-pattern-select" class="control-btn btn-secondary-action" style="text-align:left;"></select>
+                </div>
+                <button class="control-btn btn-secondary-action" id="btn-trace-clear">Reset Trace</button>
+                <button class="control-btn btn-secondary-action" id="btn-trace-camera-toggle">Enable Camera</button>
+                <button class="control-btn btn-primary-action" id="btn-trace-verify">Submit Trace</button>
+              </div>
+              <div class="canvas-container">
+                <video class="webcam-preview" id="trace-webcam" autoplay playsinline muted></video>
+                <canvas class="drawing-canvas" id="trace-canvas" width="800" height="500"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="overlay-ai-reader">
+      <div class="modal-content">
+        <button class="btn-close">&times;</button>
+        <div class="modal-header">
+          <h3 class="modal-title">🤖 AI Playroom & Guessing</h3>
+        </div>
+        <div class="modal-body">
+          <div class="workspace-layout">
+            <div class="control-panel">
+              <div class="control-group">
+                <label>Analysis Target</label>
+                <select id="ai-mode-select" class="control-btn btn-secondary-action" style="text-align:left;">
+                  <option value="digit">🔢 Digit (0-9)</option>
+                  <option value="text">📝 Handwriting (OCR)</option>
+                </select>
+              </div>
+              <button class="control-btn btn-secondary-action" id="btn-ai-clear">Clear Drawing</button>
+              <button class="control-btn btn-secondary-action" id="btn-ai-camera-toggle">Enable Camera</button>
+              <button class="control-btn btn-primary-action" id="btn-ai-predict">AI Guess Now</button>
+            </div>
+            <div class="canvas-container">
+              <video class="webcam-preview" id="ai-webcam" autoplay playsinline muted></video>
+              <canvas class="drawing-canvas" id="ai-canvas" width="800" height="500"></canvas>
+            </div>
+            <div class="control-panel" style="width:300px; justify-content:center;">
+              <div class="ai-output-box">
+                <div id="ai-output-placeholder">Draw and submit!</div>
+                <div class="ai-output-digit" id="ai-output-val" style="display:none;">8</div>
+                <div class="ai-output-text" id="ai-output-txt" style="display:none;">HELLO</div>
+                <div class="ai-output-conf" id="ai-output-conf" style="display:none;">Confidence: 94%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="overlay-games">
+      <div class="modal-content">
+        <button class="btn-close">&times;</button>
+        <div class="modal-header">
+          <h3 class="modal-title">🐝 spelling game & challenges</h3>
+        </div>
+        <div class="modal-body">
+          <div class="workspace-layout">
+            <div class="control-panel" style="width:320px; justify-content:center;">
+              <div class="game-quiz-box">
+                <div class="game-image-box" id="game-image"></div>
+                <div class="game-clue" id="game-clue">Spell this animal!</div>
+                <button class="control-btn btn-secondary-action" id="btn-game-skip" style="margin-bottom:10px;">Skip Clue</button>
+                <div id="game-feedback" style="font-size:18px; font-weight:700; min-height:30px;"></div>
+              </div>
+            </div>
+            <div class="canvas-container">
+              <video class="webcam-preview" id="game-webcam" autoplay playsinline muted></video>
+              <canvas class="drawing-canvas" id="game-canvas" width="800" height="500"></canvas>
+            </div>
+            <div class="control-panel">
+              <button class="control-btn btn-secondary-action" id="btn-game-clear">Clear spelling</button>
+              <button class="control-btn btn-secondary-action" id="btn-game-camera-toggle">Enable Camera</button>
+              <button class="control-btn btn-primary-action" id="btn-game-check">Submit spelling</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="overlay-dashboard">
+      <div class="modal-content">
+        <button class="btn-close">&times;</button>
+        <div class="modal-header">
+          <h3 class="modal-title">📊 Learning Journey Dashboard</h3>
+        </div>
+        <div class="modal-body">
+          <div class="dashboard-stats">
+            <div class="stat-box">
+              <strong class="num" id="stat-total-draws">0</strong>
+              <span>Total Sketches</span>
+            </div>
+            <div class="stat-box">
+              <strong class="num" id="stat-avg-accuracy">0%</strong>
+              <span>Trace Accuracy</span>
+            </div>
+            <div class="stat-box">
+              <strong class="num" id="stat-digits-spotted">0</strong>
+              <span>Digits Classified</span>
+            </div>
+            <div class="stat-box">
+              <strong class="num" id="stat-words-learned">0</strong>
+              <span>Words Read</span>
+            </div>
+          </div>
+          <div class="workspace-layout" style="height:auto; margin-bottom:20px;">
+            <div style="flex:1;">
+              <h4 style="margin-bottom:15px;">Learning Log History</h4>
+              <div class="history-table-wrapper">
+                <table class="history-table">
+                  <thead>
+                    <tr>
+                      <th>Activity</th>
+                      <th>Result</th>
+                      <th>Score / Confidence</th>
+                      <th>Time Completed</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-rows"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="control-panel" style="width:250px; justify-content:flex-start;">
+              <h4 style="margin-bottom:10px;">Actions</h4>
+              <button class="control-btn btn-primary-action" id="btn-dash-download">Download CSV</button>
+              <button class="control-btn btn-secondary-action" id="btn-dash-clear" style="margin-top:10px;">Clear Logs</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <script src="js/main.js"></script>
+  <script src="js/air_canvas.js"></script>
+  <script src="js/tracing.js"></script>
+  <script src="js/ai_reader.js"></script>
+  <script src="js/games.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
