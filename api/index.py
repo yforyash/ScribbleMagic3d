@@ -29,7 +29,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-init_db()
+try:
+    init_db()
+except Exception:
+    pass
 
 class RecordRequest(BaseModel):
     user: str
@@ -111,3 +114,7 @@ async def clear_history(user: str):
         return {"status": "success"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
+if os.path.exists(frontend_path):
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")
