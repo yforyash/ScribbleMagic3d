@@ -20,7 +20,7 @@ def init_db():
     conn = get_conn()
     c = conn.cursor()
     c.execute("""
-    CREATE TABLE IF NOT EXISTS users (
+    CREATE TABLE IF NOT EXISTS scribble_users (
         username VARCHAR(100) PRIMARY KEY,
         password VARCHAR(256),
         question VARCHAR(256),
@@ -45,7 +45,7 @@ def create_user(username, password, question, answer):
         conn = get_conn()
         c = conn.cursor()
         c.execute("""
-            INSERT INTO users (username, password, question, answer)
+            INSERT INTO scribble_users (username, password, question, answer)
             VALUES (%s, %s, %s, %s)
         """, (username, password, question, answer.strip().lower()))
         conn.commit()
@@ -58,7 +58,7 @@ def verify_user(username, password):
     conn = get_conn()
     c = conn.cursor()
     c.execute("""
-        SELECT password FROM users WHERE username = %s
+        SELECT password FROM scribble_users WHERE username = %s
     """, (username,))
     row = c.fetchone()
     conn.close()
@@ -70,7 +70,7 @@ def get_user_question(username):
     conn = get_conn()
     c = conn.cursor()
     c.execute("""
-        SELECT question FROM users WHERE username = %s
+        SELECT question FROM scribble_users WHERE username = %s
     """, (username,))
     row = c.fetchone()
     conn.close()
@@ -82,12 +82,12 @@ def reset_password(username, answer, new_password):
     conn = get_conn()
     c = conn.cursor()
     c.execute("""
-        SELECT answer FROM users WHERE username = %s
+        SELECT answer FROM scribble_users WHERE username = %s
     """, (username,))
     row = c.fetchone()
     if row and row[0] == answer.strip().lower():
         c.execute("""
-            UPDATE users SET password = %s WHERE username = %s
+            UPDATE scribble_users SET password = %s WHERE username = %s
         """, (new_password, username))
         conn.commit()
         conn.close()
