@@ -1,110 +1,135 @@
-\documentclass[10pt]{article}
-\usepackage[letterpaper,margin=0.5in]{geometry}
+\documentclass[10pt,letterpaper]{article}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{fontawesome5}
-\usepackage{hyperref}
+\usepackage[empty]{fullpage}
+\usepackage{geometry}
+\usepackage[pdftex]{hyperref}
+\usepackage{titlesec}
+\usepackage{xcolor}
 \usepackage{enumitem}
-\usepackage{helvet}
-\renewcommand{\familydefault}{\sfdefault}
+\usepackage{ebgaramond}
+\usepackage{microtype}
+\usepackage{fontawesome5}
+
+\geometry{left=0.5in, top=0.5in, right=0.5in, bottom=0.5in}
 
 \hypersetup{
-  colorlinks=true,
-  linkcolor=black,
-  urlcolor=black
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,
+    urlcolor=black,
+    pdfpagemode=FullScreen,
 }
 
-\newcommand{\resSection}[1]{
-  \vspace{8pt}
-  \noindent\textbf{\large\uppercase{#1}}
-  \vspace{-3pt}
-  \hrule
-  \vspace{5pt}
-}
+\titleformat{\section}{\large\bfseries\scshape}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{8pt}{4pt}
+
+\setlength{\tabcolsep}{0in}
+
+\pdfgentounicode=1
 
 \begin{document}
-\pagestyle{empty}
 
 \begin{center}
-  {\Huge\textbf{NISHCHAY AGARWAL}} \\
-  \vspace{3pt}
-  {\small\textbf{B A C K E N D \quad D E V E L O P M E N T}} \\
-  \vspace{4pt}
-  {\small
-    Bengaluru, Karnataka, India \\
-    \vspace{2pt}
-    \faPhone~\href{tel:+919151463571}{(+91) 9151463571} \quad | \quad
-    \faEnvelope~\href{mailto:yashagarwal1705@gmail.com}{yashagarwal1705@gmail.com} \quad | \quad
-    \faGithub~\href{https://github.com/yforyash}{yforyash} \quad | \quad
-    \faLinkedin~\href{https://linkedin.com/in/yforyash}{yforyash}
-  }
+    {\Huge \textls[150]{\MakeUppercase{Nishchay Agarwal}}} \\ \vspace{5pt}
+    {\normalsize \textls[320]{\MakeUppercase{Software Development}}} \\ \vspace{3pt}
+    {\small Bengaluru, Karnataka, India} \\ \vspace{6pt}
+    \begin{tabular}{c c c c}
+        \small\faPhone*~+91 9151463571 & 
+        \quad\small\faEnvelope~\href{mailto:yashagarwal1705@gmail.com}{Email} & 
+        \quad\small\faGithub~\href{https://github.com/yforyash}{GitHub} & 
+        \quad\small\faLinkedin~\href{https://linkedin.com/in/yforyash}{LinkedIn}
+    \end{tabular}
 \end{center}
-\vspace{-8pt}
-\hrule
-\vspace{8pt}
 
-\resSection{Summary}
-\noindent
-Results-driven Computer Science student with hands-on experience building scalable RESTful APIs using Node.js, Express.js, and PostgreSQL. Independently designed and developed a procure-to-pay backend system featuring JWT authentication, Role-Based Access Control (RBAC), and modular architecture during a professional internship. Familiar with AI/ML concepts including OCR, Computer Vision, TensorFlow, and Generative AI fundamentals through academic and project-based work. Additionally gained real-world IT infrastructure exposure as a NOC Analyst Trainee, working with networking, virtualization, storage systems, and incident management workflows. Strong foundation in Data Structures \& Algorithms, OOP principles, and software design fundamentals, with a passion for building secure, maintainable, and high-performance applications.
+\section{Summary}
+\noindent Results-driven Computer Science student with hands-on experience engineering scalable RESTful APIs and modern full-stack web applications using Node.js, Express.js, PostgreSQL, and React.js. Demonstrated technical leadership by independently designing and developing a modular procure-to-pay backend system during an internship, integrating secure JWT authentication, API documentation with Swagger, and strict Role-Based Access Control (RBAC). Proficient in React.js fundamentals, including state management, custom hooks, client-side routing, and responsive design, alongside academic exposure to Computer Vision, TensorFlow, and Generative AI. Additionally, brings valuable IT infrastructure perspective from a NOC Analyst Trainee role, troubleshooting networks, virtualization, storage, and incident response. Driven by a solid foundation in DSA and software architecture, with a passion for building secure, maintainable, and high-performance enterprise applications.
 
-\resSection{Education}
+\section{Education}
 \noindent
 \textbf{Bachelor of Technology in Computer Science and Information Technology} \hfill May 2026 \\
-Reva University $\cdot$ Bangalore, Karnataka \\
-Secured 6.9 C.G.P.A
+Reva University, Bangalore, Karnataka \\
+CGPA: 7.3
 
-\resSection{Skills}
-\noindent
-\begin{tabular}{@{}p{2.3in} p{5.0in}@{}}
-  \textbf{Languages:} & Java, JavaScript, Python \\
-  \textbf{Current Tech Stack:} & Node.js, Express.js, RESTful APIs, React.js, Streamlit \\
-  \textbf{AI/ML \& Emerging Tech:} & TensorFlow, OpenCV, OCR, NLP Basics, Deep Learning Fundamentals, Generative AI Concepts \\
-  \textbf{Cloud/Tools:} & ServiceNow, VMware, Git, GitHub, VS Code \\
-  \textbf{Databases:} & PostgreSQL, MySQL, Redis, MongoDB \\
-  \textbf{Software Design \& Fundamentals:} & Data Structures and Algorithms (DSA), Object Oriented Programming (OOPS), RDBMS, Software Development Life Cycle (SDLC), Agile Methodologies, Networking, SOP, RDP \\
-  \textbf{Storage \& Infrastructure:} & SAN (Storage Area Network), NAS (Network Attached Storage), DAS (Direct Attached Storage), RAID (Redundant Array of Independent Disks), Backup \& Recovery Basics \\
-  \textbf{Soft Skills:} & Communication, Teamwork, Adaptability, Problem-Solving \\
-\end{tabular}
+\section{Skills}
+\begin{itemize}[leftmargin=0.15in, label={}, itemsep=0.1pt, parsep=2pt]
+    \item \textbf{Languages:} Java, JavaScript, Python
+    \item \textbf{Current Tech Stack:} Node.js, Express.js, RESTful APIs, React.js, Streamlit
+    \item \textbf{Cloud/Tools:} ServiceNow, VMware, Git, GitHub, VS Code, Postman, Linux
+    \item \textbf{Databases:} PostgreSQL, MySQL
+    \item \textbf{Software Design \& Fundamentals:} Data Structures and Algorithms (DSA), Object Oriented Programming (OOPs), RDBMS, Software Development Life Cycle (SDLC), Agile Methodologies, Networking, SOP, RDP, RCA
+    \item \textbf{Storage \& Infrastructure:} SAN (Storage Area Network), NAS (Network Attached Storage), DAS (Direct Attached Storage), RAID (Redundant Array of Independent Disks), Backup \& Recovery Basics
+    \item \textbf{Soft Skills:} Communication, Teamwork, Adaptability, Problem-Solving
+\end{itemize}
 
-\resSection{Internship Experience}
+\section{Internship Experience}
 \noindent
 \textbf{NOC Analyst Trainee} \hfill April 2026 \\
-Proval Technologies Pvt. Ltd. \\
-Noida, Uttar Pradesh
-\begin{itemize}[label=$\blacktriangleright$,leftmargin=*,noitemsep,topsep=2pt,parsep=2pt]
-  \item Gained hands-on exposure to Network Operations Center (NOC) workflows and monitoring practices.
-  \item Learned and applied concepts of networking, servers, storage systems, and backup strategies.
-  \item Worked with virtualization technologies and understood infrastructure management basics.
-  \item Studied and followed Standard Operating Procedures (SOPs) for incident handling and escalation.
-  \item Monitored system performance and understood alerting and troubleshooting processes.
-  \item Developed foundational knowledge of IT infrastructure, uptime management, and issue resolution.
+\textit{Proval Technologies Pvt. Ltd.}, Noida, Uttar Pradesh
+\begin{itemize}[leftmargin=0.2in, nosep, topsep=2pt]
+    \item Gained hands-on exposure to Network Operations Center (NOC) workflows and monitoring practices.
+    \item Learned and applied concepts of networking, servers, storage systems, and backup strategies.
+    \item Worked with virtualization technologies and understood infrastructure management basics.
+    \item Studied and followed Standard Operating Procedures (SOPs) for incident handling and escalation.
+    \item Monitored system performance and understood alerting and troubleshooting processes.
+    \item Developed foundational knowledge of IT infrastructure, uptime management, and issue resolution.
+\end{itemize}
+
+\vspace{6pt}
+\noindent
+\textbf{Backend Developer Intern} \hfill July 2025 \\
+\textit{VMA Labs Pvt Ltd}, Bengaluru, Karnataka \\
+\textbf{Project:} vsync --- Procure to Pay System (RBAC + RESTful APIs) \\
+\textbf{Tech Stack:} Node.js, Express.js, knex.js, PostgreSQL, REST API, JWT, Role-Based Access Control
+\begin{itemize}[leftmargin=0.2in, nosep, topsep=2pt]
+    \item Built a fully modular backend architecture with clearly separated services, repositories, and controllers managing Users, Products, Inventories, and Catalogs, ensuring clean code, maintainability, and scalability.
+    \item Designed and implemented a comprehensive RBAC system with fine-grained permission management across admin, manager, and standard user roles, securing all sensitive endpoints including role changes and inventory overrides.
+    \item Developed full CRUD modules for Users, Products, Inventory, and Catalogs with field-level validation, secure password hashing, JWT-based authentication, session management, and role assignment workflows.
+    \item Used knex.js with transaction support for all database interactions and indexed columns for efficient querying across all entities.
+    \item Implemented middleware-based access control guards, centralized error handling, and request validation pipelines to enforce permission policies, standardize API responses, and validate incoming payloads.
+    \item Applied soft-delete across all modules to preserve historical data, designed paginated RESTful API contracts following best practices, and added comprehensive logging for auditing user actions, role changes, and inventory updates.
+\end{itemize}
+
+\section{College Projects}
+\noindent
+\textbf{Zomato Clone --- Full Stack Web Application}
+\begin{itemize}[leftmargin=0.2in, nosep, topsep=1pt]
+    \item Engineered a high-performance full-stack Zomato Clone utilizing Node.js, Express, PostgreSQL, and React. Implemented real-time order tracking using Server-Sent Events (SSE) to stream coordinates dynamically onto an interactive Leaflet/Google Maps interface. Optimized user experience by designing a custom CSS skeleton Shimmer UI and adding artificial backend latency to demonstrate seamless data loading states.
 \end{itemize}
 
 \vspace{4pt}
 \noindent
-\textbf{INTERNSHIP} \hfill July 2025 \\
-VMA Labs Pvt Ltd \\
-Bengaluru, Karnataka \\
-\textit{vsync - procure to pay system (RBAC+Restful APIs)}
-\begin{itemize}[label=$\blacktriangleright$,leftmargin=*,noitemsep,topsep=2pt,parsep=2pt]
-  \item Tech Stack - Node.js, Express.js, knex.js, PostgreSQL, REST API, JWT, Role-Based Access Control
-  \item Built a fully modular backend architecture with clearly separated services, repositories, and controllers managing Users, Products, Inventories, and Catalogs --- ensuring clean code, high maintainability, and scalability.
-  \item Designed and implemented a comprehensive RBAC system with fine-grained permission management across admin, manager, and standard user roles, securing all sensitive endpoints including role changes and inventory overrides.
-  \item Developed full CRUD modules for Users, Products, Inventory, and Catalogs with field-level validation, secure password hashing, JWT-based authentication, session management, and role assignment workflows.
-  \item Used knex.js with transaction support for all database interactions and indexed columns for efficient querying across all entities.
-  \item Implemented middleware-based access control guards, centralized error handling, and request validation pipelines to enforce permission policies, standardize API responses, and validate all incoming payloads.
-  \item Applied soft-delete across all modules to preserve historical data, designed paginated RESTful API contracts following best practices, and added comprehensive logging for auditing user actions, role changes, and inventory updates.
+\textbf{SpeakUp --- Anonymous Crime Reporting Platform --- Full Stack Web Application}
+\begin{itemize}[leftmargin=0.2in, nosep, topsep=1pt]
+    \item Architected a secure anonymous crime reporting platform leveraging a React frontend and Node.js/Express backend. Integrated encrypted database schemas and secure media upload pipelines to safeguard user identity while managing incident lifecycle workflows. Demonstrated modern full-stack methodologies by building robust RESTful APIs, session-based authentication, and optimized Postgres storage solutions to handle media-heavy report submissions.
 \end{itemize}
 
-\resSection{College Projects}
+\vspace{4pt}
 \noindent
-\textbf{3D Pen \& Virtual Writing Pad | Python} \\
-Built a virtual writing pad named ScribbleMagic3D that allows users to draw on the screen using hand movements captured through a webcam. The system tracks finger movement in real time and converts it into digital strokes, enabling touchless drawing and basic color selection. This project demonstrates practical use of computer vision concepts and real-time interaction.
+\textbf{Procure-to-Pay \& RBAC System --- Enterprise Backend Application}
+\begin{itemize}[leftmargin=0.2in, nosep, topsep=1pt]
+    \item Developed a modular procure-to-pay backend system utilizing Node.js, Express, and PostgreSQL, designed to automate enterprise purchasing workflows. Engineered strict Role-Based Access Control (RBAC) and JWT authentication to protect financial transactions. Leveraged Swagger for comprehensive API documentation, ensuring seamless developer integration and compliance with enterprise security standards during a professional internship.
+\end{itemize}
 
-\resSection{Achievements}
-\begin{itemize}[label=$\blacktriangleright$,leftmargin=*,noitemsep,topsep=2pt,parsep=2pt]
-  \item Member of HACC (REVA Coding Club); contributed to organizing national-level hackathons including Hackverse.
+\vspace{4pt}
+\noindent
+\textbf{3D Pen \& Virtual Writing Pad --- Python}
+\begin{itemize}[leftmargin=0.2in, nosep, topsep=1pt]
+    \item Built a virtual writing pad named ScribbleMagic3D that allows users to draw on the screen using hand movements captured through a webcam. The system tracks finger movement in real time and converts it into digital strokes, enabling touchless drawing and basic color selection. This project demonstrates practical use of computer vision concepts and real-time interaction.
+\end{itemize}
+
+\section{Certifications}
+\begin{itemize}[leftmargin=0.2in, nosep]
+    \item Salesforce Certified Agentforce Specialist (Credential ID: 7170757)
+    \item Web Application Development Certification, REVA University
+\end{itemize}
+
+\section{Achievements}
+\begin{itemize}[leftmargin=0.2in, itemsep=2pt, parsep=1pt]
+    \item Member of HACC (REVA Coding Club); contributed to organizing national-level hackathons including Hackverse.
+    \item Qualified and competed at the State Level Abacus Competition, demonstrating advanced mental arithmetic and logical calculations under timed constraints.
+    \item Participated in the Behes Inter-School Debating Championship, showcasing structured public speaking, argumentation, and critical thinking.
+    \item Represented school in Inter-School Swimming Competitions, demonstrating target-driven focus and physical discipline.
+    \item Participated in Inter-School Spell Bee Competitions, demonstrating memory retention and attention to linguistic precision.
 \end{itemize}
 
 \end{document}

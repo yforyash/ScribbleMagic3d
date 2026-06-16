@@ -19,14 +19,37 @@ class AiReaderEngine {
     this.handsObj = null;
     this.cameraObj = null;
     
+    this.model = null;
+    
     this.initCanvasBackground();
     this.initMouseEvents();
     this.initControls();
+    this.initModel();
   }
   
   initCanvasBackground() {
     this.ctx.fillStyle = "#ffffff";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+  
+  async initModel() {
+    this.model = tf.sequential();
+    this.model.add(tf.layers.reshape({ targetShape: [28, 28, 1], inputShape: [28, 28] }));
+    this.model.add(tf.layers.conv2d({ filters: 32, kernelSize: 3, activation: 'relu' }));
+    this.model.add(tf.layers.maxPooling2d({ poolSize: [2, 2] }));
+    this.model.add(tf.layers.flatten());
+    this.model.add(tf.layers.dense({ units: 128, activation: 'relu' }));
+    this.model.add(tf.layers.dense({ units: 10, activation: 'softmax' }));
+    
+    try {
+      const res = await fetch('/model/weights.json');
+      const w = await res.json();
+      this.model.layers[1].setWeights([tf.tensor(w.conv2d_w), tf.tensor(w.conv2d_b)]);
+      this.model.layers[4].setWeights([tf.tensor(w.dense1_w), tf.tensor(w.dense1_b)]);
+      this.model.layers[5].setWeights([tf.tensor(w.dense2_w), tf.tensor(w.dense2_b)]);
+    } catch (e) {
+      console.error(e);
+    }
   }
   
   initMouseEvents() {
@@ -103,55 +126,96 @@ class AiReaderEngine {
     }
   }
   
-  runAiGuess() {
-    const dataUrl = this.canvas.toDataURL("image/png");
+  async runAiGuess() {
     const mode = this.modeSelect.value;
-    const url = mode === "digit" ? "/api/predict-digit" : "/api/predict-text";
-    
     this.predictBtn.textContent = "AI Reading...";
     this.predictBtn.disabled = true;
     
-    fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: dataUrl, user: currentUser })
-    })
-    .then(res => res.json())
-    .then(data => {
-      this.predictBtn.textContent = "AI Guess Now";
-      this.predictBtn.disabled = false;
-      
-      document.getElementById("ai-output-placeholder").style.display = "none";
-      const valEl = document.getElementById("ai-output-val");
-      const txtEl = document.getElementById("ai-output-txt");
-      const confEl = document.getElementById("ai-output-conf");
-      
+    document.getElementById("ai-output-placeholder").style.display = "none";
+    const valEl = document.getElementById("ai-output-val");
+    const txtEl = document.getElementById("ai-output-txt");
+    const confEl = document.getElementById("ai-output-conf");
+    
+    try {
       if (mode === "digit") {
-        valEl.textContent = data.digit;
+        if (!this.model) {
+          throw new Error("Model not ready");
+        }
+        
+        const tensor = tf.tidy(() => {
+          let img = tf.browser.fromPixels(this.canvas, 1);
+          img = tf.image.resizeBilinear(img, [28, 28]);
+          img = img.toFloat();
+          const meanVal = img.mean().dataSync()[0];
+          if (meanVal > 127) {
+            img = tf.scalar(255).sub(img);
+          }
+          img = img.div(tf.scalar(255.0));
+          return img.expandDims(0);
+        });
+        
+        const pred = this.model.predict(tensor);
+        const data = pred.dataSync();
+        const digit = pred.argMax(-1).dataSync()[0];
+        const confidence = data[digit];
+        
+        tensor.dispose();
+        pred.dispose();
+        
+        valEl.textContent = digit;
         valEl.style.display = "block";
         txtEl.style.display = "none";
         
-        confEl.textContent = `Confidence: ${(data.confidence * 100).toFixed(0)}%`;
+        confEl.textContent = `Confidence: ${(confidence * 100).toFixed(0)}%`;
         confEl.style.display = "block";
         
         if (sound.success) sound.success();
-        this.speakText(`I guess the digit is ${data.digit}`);
+        this.speakText(`I guess the digit is ${digit}`);
+        
+        await fetch("/api/log-history", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user: currentUser,
+            type: "Digit",
+            value: String(digit),
+            confidence: parseFloat(confidence)
+          })
+        });
+        
       } else {
-        txtEl.textContent = data.text;
+        const dataUrl = this.canvas.toDataURL("image/png");
+        const result = await Tesseract.recognize(dataUrl, 'eng');
+        const text = result.data.text.trim();
+        const cleanText = text ? text : "Not recognized";
+        
+        txtEl.textContent = cleanText;
         txtEl.style.display = "block";
         valEl.style.display = "none";
         confEl.style.display = "none";
         
         if (sound.success) sound.success();
-        this.speakText(`I read the text: ${data.text}`);
+        this.speakText(`I read the text: ${cleanText}`);
+        
+        await fetch("/api/log-history", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user: currentUser,
+            type: "OCR",
+            value: cleanText,
+            confidence: 1.0
+          })
+        });
       }
-    })
-    .catch(err => {
-      this.predictBtn.textContent = "AI Guess Now";
-      this.predictBtn.disabled = false;
+    } catch (e) {
       if (sound.fail) sound.fail();
       alert("AI reading failed!");
-    });
+      console.error(e);
+    } finally {
+      this.predictBtn.textContent = "AI Guess Now";
+      this.predictBtn.disabled = false;
+    }
   }
   
   speakText(text) {

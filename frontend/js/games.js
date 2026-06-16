@@ -151,7 +151,7 @@ class GameEngine {
     this.loadQuestion();
   }
   
-  checkSpelling() {
+  async checkSpelling() {
     const dataUrl = this.canvas.toDataURL("image/png");
     const target = quizWords[this.currentIndex].word;
     
@@ -160,17 +160,13 @@ class GameEngine {
     this.feedbackBox.textContent = "AI is evaluating your spelling...";
     this.feedbackBox.style.color = "#555";
     
-    fetch("/api/predict-text", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: dataUrl, user: currentUser })
-    })
-    .then(res => res.json())
-    .then(data => {
+    try {
+      const result = await Tesseract.recognize(dataUrl, 'eng');
+      const text = result.data.text.trim();
+      const recognized = text.toUpperCase().replace(/[^A-Z]/g, "");
+      
       this.checkBtn.textContent = "Submit spelling";
       this.checkBtn.disabled = false;
-      
-      const recognized = data.text.toUpperCase().replace(/[^A-Z]/g, "");
       
       if (recognized === target) {
         if (sound.success) sound.success();
@@ -178,7 +174,7 @@ class GameEngine {
         this.feedbackBox.style.color = "#6bcb77";
         this.speakText(`Awesome! You spelled ${target} correctly!`);
         
-        fetch("/api/log-history", {
+        await fetch("/api/log-history", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -194,17 +190,17 @@ class GameEngine {
         }, 2200);
       } else {
         if (sound.fail) sound.fail();
-        this.feedbackBox.textContent = `❌ read as: "${data.text}". Try writing clearly!`;
+        this.feedbackBox.textContent = `❌ read as: "${text}". Try writing clearly!`;
         this.feedbackBox.style.color = "#ff5e97";
-        this.speakText(`Almost there! That spelled as ${data.text}. Try drawing again!`);
+        this.speakText(`Almost there! That spelled as ${text}. Try drawing again!`);
       }
-    })
-    .catch(err => {
+    } catch (err) {
       this.checkBtn.textContent = "Submit spelling";
       this.checkBtn.disabled = false;
       this.feedbackBox.textContent = "Error submitting spelling.";
       if (sound.fail) sound.fail();
-    });
+      console.error(err);
+    }
   }
   
   speakText(text) {

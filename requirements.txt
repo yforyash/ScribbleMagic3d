@@ -1,4 +1,3 @@
-streamlit
-pandas
-numpy
-tensorflow
+fastapi
+pydantic
+psycopg2-binary
